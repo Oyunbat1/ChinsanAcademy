@@ -1,6 +1,6 @@
 "use client";
 import TextType from "./TextType";
-import TeacherWithStudents from "../../public/TeacherWithStudents.png";
+import TeacherWithStudents from "../../public/teacherWithStudents.png";
 import Image from "next/image";
 import TiltedCard from './TiltedCard';
 
