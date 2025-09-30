@@ -49,12 +49,12 @@ export default function Header() {
         >
           <span
             className={`h-1 w-full bg-white rounded transition-all duration-300 ${
-              isOpen ? "rotate-45 translate-y-2" : ""
+              isOpen ? "rotate-45 translate-y-3" : ""
             }`}
           />
           <span
             className={`h-1 w-full bg-white rounded transition-all duration-300 ${
-              isOpen ? "opacity-0" : ""
+              isOpen ? "opacity-0 " : ""
             }`}
           />
           <span
@@ -72,7 +72,7 @@ export default function Header() {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ ease: "easeInOut", duration: 0.4 }}
-            className="fixed inset-0 bg-white flex flex-col items-center justify-center space-y-8 text-[32px] z-40 md:hidden"
+            className="fixed inset-0 bg-[#475569] flex flex-col items-center justify-center space-y-8 text-[32px] z-40 md:hidden"
           >
             {menuItems.map((item, index) => (
               <motion.div
@@ -85,7 +85,7 @@ export default function Header() {
                   href={item.link}
                   aria-label={item.ariaLabel}
                   onClick={() => setIsOpen(false)}
-                  className="text-gray-800 hover:text-[#FF9443] font-medium transition-colors duration-300"
+                  className="text-white hover:text-[#FF9443] font-medium transition-colors duration-300"
                 >
                   {item.label}
                 </Link>
