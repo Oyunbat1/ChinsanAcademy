@@ -1,6 +1,6 @@
 "use client"
 import Silk from '../components/Silk';
-
+import HeroSection from '../components/Hero-section';
 export default function Home() {
   return (
   <div>
@@ -11,6 +11,7 @@ export default function Home() {
   noiseIntensity={1.5}
   rotation={0}
 />
+<HeroSection />
 </div>
   );
 }
