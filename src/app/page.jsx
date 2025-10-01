@@ -4,6 +4,7 @@ import Silk from '../components/Silk';
 import HeroSection from '../components/Hero-section';
 import ScrollReveal from '@/components/ScrollReveal';
 import SplitText from '@/components/SplitText';
+import ScrollCard from '@/components/ScrollCard';
 import { useEffect } from 'react';
 export default function Home() {
 
@@ -50,6 +51,13 @@ requestAnimationFrame(raf);
   Бид таныг бичих, илтгэх, олон нийтийн өмнө өөрийгөө итгэлтэй илэрхийлэхэд чиглэсэн сургалтыг санал болгодог.
 </ScrollReveal>
 </div>
+  <div className='flex flex-col justify-center items-center '>
+  <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold text-white text-center px-4">
+  Манай гол үйлчилгээнүүд
+</h2>
+
+    <ScrollCard/>
+  </div>
 </div>
   );
 }
