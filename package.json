@@ -8,6 +8,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@gsap/react": "^2.1.2",
     "@react-three/fiber": "^9.3.0",
     "framer-motion": "^12.23.22",
     "gsap": "^3.13.0",
