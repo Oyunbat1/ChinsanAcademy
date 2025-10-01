@@ -2,6 +2,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "../components/Header";
 import { Montserrat } from "next/font/google";
+import SplashCursor from "@/components/SplashCursor";
 
 const montserrat = Montserrat({
   subsets: ["latin"],
@@ -21,6 +22,7 @@ export default function RootLayout({ children }) {
         className={`${montserrat.className} antialiased`}
       >
         <Header />
+        <SplashCursor />
         {children}
       </body>
     </html>
