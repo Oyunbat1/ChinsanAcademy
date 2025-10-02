@@ -5,6 +5,8 @@ import HeroSection from '../components/Hero-section';
 import ScrollReveal from '@/components/ScrollReveal';
 import SplitText from '@/components/SplitText';
 import ScrollCard from '@/components/ScrollCard';
+import CircularGallery from '../components/CircularGallery';
+import Contact from '@/components/Contact';
 import { useEffect } from 'react';
 export default function Home() {
 
@@ -52,12 +54,23 @@ requestAnimationFrame(raf);
 </ScrollReveal>
 </div>
   <div className='flex flex-col justify-center items-center '>
-  <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold text-white text-center px-4">
+  <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold text-white text-center px-4">
   Манай гол үйлчилгээнүүд
 </h2>
 
     <ScrollCard/>
   </div>
+<div style={{ height: '600px', position: 'relative', marginBottom: '400px',marginTop: '10px' }} >
+  <CircularGallery bend={3} textColor="#ffffff" borderRadius={0.05} scrollEase={0.02} items={[
+      { image: "/testimonial/Buyntogtoh.jpg", text: "Б.Буянтогтох" },
+      { image: "/testimonial/Erdem-Tuguldur.jpg", text: "Б.Эрдэм-Төгөлдөр" },
+      { image: "/testimonial/Misheel.jpg", text: "Б.Мишээл" },
+      { image: "/testimonial/Sarnai.jpg", text: "Д.Сарнай" },
+      { image: "/testimonial/Saruul.jpg", text: "Г.Саруул" },
+      { image: "/testimonial/Turbat.jpg", text: "Б.Төрбат" },
+    ]}/>
+</div>
+<Contact />
 </div>
   );
 }

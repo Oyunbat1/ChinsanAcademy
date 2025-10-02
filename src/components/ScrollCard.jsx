@@ -14,7 +14,7 @@ export default function ScrollCard() {
     return (
         <div 
             ref={container} 
-            className="flex flex-col items-center justify-center  mb-[100vh] px-4"
+            className="flex flex-col items-center justify-center   px-4"
         >
             {services.map((service, i) => {
                 const targetScale = 1 - ((services.length - i) * 0.05)
