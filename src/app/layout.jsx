@@ -22,7 +22,7 @@ export default function RootLayout({ children }) {
         className={`${montserrat.className} antialiased`}
       >
         <Header />
-        <SplashCursor />
+        {/* <SplashCursor /> */}
         {children}
       </body>
     </html>
