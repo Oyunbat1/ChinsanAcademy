@@ -31,7 +31,7 @@ export default function Header() {
   },[])
  
   return (
-    <header className={`fixed top-0 left-0 w-full  shadow-md z-50 ${isScrolled ? 'backdrop-blur-2xl transition-all duration-600' : 'bg-transparent transition-all duration-600'}`}>
+    <header className={`fixed top-0 left-0 w-full  shadow-md z-50 ${isScrolled ? 'bg-[#FF9443] transition-all duration-600' : 'bg-transparent transition-all duration-600'}`}>
       <div className="flex items-center justify-between px-6 py-4 md:justify-start">
         <Link href="/">
           <Magnet padding={50} disabled={false} magnetStrength={6}> 
@@ -45,7 +45,7 @@ export default function Header() {
               key={item.label}
               href={item.link}
               aria-label={item.ariaLabel}
-              className={`text-white hover:text-[#FF9443] ${isScrolled ? "" :""} transition-colors duration-300 font-medium`}
+              className={`text-white hover:text-black ${isScrolled ? "" :""} transition-colors duration-300 font-medium`}
             >  <Magnet padding={50} disabled={false} magnetStrength={6}> 
                     {item.label} 
                     </Magnet>
