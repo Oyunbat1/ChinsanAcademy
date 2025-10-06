@@ -6,7 +6,7 @@ import TiltedCard from './TiltedCard';
 
 export default function HeroSection() {
   return (
-    <section className="relative w-full flex justify-center ">
+    <section id="home" className="relative w-full flex justify-center scroll-mt-[120px]">
       <div className="container  justify-center   py-4 flex flex-col-reverse lg:flex-row items-center gap-12 ">
         <div className="rounded-2xl overflow-hidden mt-[40px] md:mt-[130px]">
    <TiltedCard
