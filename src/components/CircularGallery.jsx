@@ -43,7 +43,7 @@ function createTextTexture(gl, text, font = 'bold 30px monospace', color = 'blac
 }
 
 class Title {
-  constructor({ gl, plane, renderer, text, textColor = '#545050', font = '30px sans-serif' }) {
+  constructor({ gl, plane, renderer, text, textColor = '#545050', font = '30px sans-serif', above = false, alpha = 1 }) {
     autoBind(this);
     this.gl = gl;
     this.plane = plane;
@@ -51,6 +51,8 @@ class Title {
     this.text = text;
     this.textColor = textColor;
     this.font = font;
+    this.above = above;
+    this.alpha = alpha;
     this.createMesh();
   }
   createMesh() {
@@ -71,14 +73,15 @@ class Title {
       fragment: `
         precision highp float;
         uniform sampler2D tMap;
+        uniform float uAlpha;
         varying vec2 vUv;
         void main() {
           vec4 color = texture2D(tMap, vUv);
           if (color.a < 0.1) discard;
-          gl_FragColor = color;
+          gl_FragColor = vec4(color.rgb, color.a * uAlpha);
         }
       `,
-      uniforms: { tMap: { value: texture } },
+      uniforms: { tMap: { value: texture }, uAlpha: { value: this.alpha } },
       transparent: true
     });
     this.mesh = new Mesh(this.gl, { geometry, program });
@@ -86,8 +89,15 @@ class Title {
     const textHeight = this.plane.scale.y * 0.15;
     const textWidth = textHeight * aspect;
     this.mesh.scale.set(textWidth, textHeight, 1);
-    this.mesh.position.y = -this.plane.scale.y * 0.5 - textHeight * 0.5 - 0.05;
+    this.mesh.position.y = this.above
+      ? this.plane.scale.y * 0.5 + textHeight * 0.5 + 0.05
+      : -this.plane.scale.y * 0.5 - textHeight * 0.5 - 0.05;
     this.mesh.setParent(this.plane);
+  }
+  setAlpha(value) {
+    if (this.mesh && this.mesh.program && this.mesh.program.uniforms.uAlpha) {
+      this.mesh.program.uniforms.uAlpha.value = value;
+    }
   }
 }
 
@@ -102,6 +112,7 @@ class Media {
     scene,
     screen,
     text,
+    description,
     viewport,
     bend,
     textColor,
@@ -118,6 +129,7 @@ class Media {
     this.scene = scene;
     this.screen = screen;
     this.text = text;
+    this.description = description || '';
     this.viewport = viewport;
     this.bend = bend;
     this.textColor = textColor;
@@ -218,6 +230,19 @@ class Media {
       textColor: this.textColor,
       fontFamily: this.font
     });
+    // Hover description above image, initially hidden
+    if (this.description) {
+      this.hoverTitle = new Title({
+        gl: this.gl,
+        plane: this.plane,
+        renderer: this.renderer,
+        text: this.description,
+        textColor: this.textColor,
+        font: 'bold 20px Figtree',
+        above: true,
+        alpha: 0
+      });
+    }
   }
   update(scroll, direction) {
     this.plane.position.x = this.x - scroll.current - this.extra;
@@ -381,6 +406,27 @@ class App {
     this.isDown = false;
     this.onCheck();
   }
+  onPointerEnter(e) {
+    if (!this.medias) return;
+    const rect = this.gl.canvas.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    const y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+    // simplistic hit test by nearest plane in screen x
+    let nearest;
+    let min = Infinity;
+    this.medias.forEach(media => {
+      const dx = Math.abs(media.plane.position.x);
+      if (dx < min) {
+        min = dx;
+        nearest = media;
+      }
+    });
+    if (nearest && nearest.hoverTitle) nearest.hoverTitle.setAlpha(1);
+  }
+  onPointerLeave() {
+    if (!this.medias) return;
+    this.medias.forEach(media => media.hoverTitle && media.hoverTitle.setAlpha(0));
+  }
   onWheel(e) {
     const delta = e.deltaY || e.wheelDelta || e.detail;
     this.scroll.target += (delta > 0 ? this.scrollSpeed : -this.scrollSpeed) * 0.2;
@@ -426,6 +472,8 @@ class App {
     this.boundOnTouchDown = this.onTouchDown.bind(this);
     this.boundOnTouchMove = this.onTouchMove.bind(this);
     this.boundOnTouchUp = this.onTouchUp.bind(this);
+    this.boundOnPointerEnter = this.onPointerEnter.bind(this);
+    this.boundOnPointerLeave = this.onPointerLeave.bind(this);
     window.addEventListener('resize', this.boundOnResize);
     window.addEventListener('mousewheel', this.boundOnWheel);
     window.addEventListener('wheel', this.boundOnWheel);
@@ -435,6 +483,9 @@ class App {
     window.addEventListener('touchstart', this.boundOnTouchDown);
     window.addEventListener('touchmove', this.boundOnTouchMove);
     window.addEventListener('touchend', this.boundOnTouchUp);
+    this.gl.canvas.addEventListener('pointerenter', this.boundOnPointerEnter);
+    this.gl.canvas.addEventListener('pointermove', this.boundOnPointerEnter);
+    this.gl.canvas.addEventListener('pointerleave', this.boundOnPointerLeave);
   }
   destroy() {
     window.cancelAnimationFrame(this.raf);
@@ -447,6 +498,11 @@ class App {
     window.removeEventListener('touchstart', this.boundOnTouchDown);
     window.removeEventListener('touchmove', this.boundOnTouchMove);
     window.removeEventListener('touchend', this.boundOnTouchUp);
+    if (this.gl && this.gl.canvas) {
+      this.gl.canvas.removeEventListener('pointerenter', this.boundOnPointerEnter);
+      this.gl.canvas.removeEventListener('pointermove', this.boundOnPointerEnter);
+      this.gl.canvas.removeEventListener('pointerleave', this.boundOnPointerLeave);
+    }
     if (this.renderer && this.renderer.gl && this.renderer.gl.canvas.parentNode) {
       this.renderer.gl.canvas.parentNode.removeChild(this.renderer.gl.canvas);
     }

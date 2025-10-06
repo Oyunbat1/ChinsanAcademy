@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { createPortal } from "react-dom"
 import { motion, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import Image from "next/image"
@@ -8,11 +9,11 @@ import logo from "../../public/logo.png"
 import Magnet from './Magnet'
 
 const menuItems = [
-  { label: "Нүүр", ariaLabel: "Нүүр хуудас руу очих", link: "/" },
-  { label: "Бидний тухай", ariaLabel: "Манай тухай", link: "/about" },
-  { label: "Үйлчилгээ", ariaLabel: "Үйлчилгээ үзэх", link: "/services" },
-  { label: "Сэтгэгдэл", ariaLabel: "Сэтгэгдэл унших", link: "/reviews" },
-  { label: "Холбоо барих", ariaLabel: "Холбоо барих", link: "/contact" },
+  { label: "Нүүр", ariaLabel: "Нүүр хуудас руу очих", link: "#home" },
+  { label: "Бидний тухай", ariaLabel: "Манай тухай", link: "#about" },
+  { label: "Үйлчилгээ", ariaLabel: "Үйлчилгээ үзэх", link: "#services" },
+  { label: "Сэтгэгдэл", ariaLabel: "Сэтгэгдэл унших", link: "#reviews" },
+  { label: "Холбоо барих", ariaLabel: "Холбоо барих", link: "#contact" },
 ]
 
 export default function Header() {
@@ -24,16 +25,29 @@ export default function Header() {
       setIsScrolled(window.scrollY > 50)
     }
     handleScroll();
-    window.addEventListener("scroll", handleScroll)
+    window.addEventListener("scroll", handleScroll, { passive: true })
     return () => {
       window.removeEventListener("scroll", handleScroll)
     }
   },[])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const htmlEl = document.querySelector('html')
+    const bodyEl = document.body
+    if (isOpen) {
+      htmlEl && htmlEl.classList.add('overflow-hidden')
+      bodyEl && bodyEl.classList.add('overflow-hidden')
+    } else {
+      htmlEl && htmlEl.classList.remove('overflow-hidden')
+      bodyEl && bodyEl.classList.remove('overflow-hidden')
+    }
+  }, [isOpen])
  
   return (
-    <header className={`fixed top-0 left-0 w-full  shadow-md z-50 ${isScrolled ? 'bg-[#FF9443] transition-all duration-600' : 'bg-transparent transition-all duration-600'}`}>
+    <header className={`fixed top-0 left-0 w-full  shadow-md z-50 ${isScrolled ? 'bg-background/10 backdrop-blur-sm transition-all duration-600' : 'bg-transparent transition-all duration-600'}`}>
       <div className="flex items-center justify-between px-6 py-4 md:justify-start">
-        <Link href="/">
+        <Link href="#home" onClick={() => setIsOpen(false)}>
           <Magnet padding={50} disabled={false} magnetStrength={6}> 
             <Image src={logo} width={60} height={60} alt="image"></Image> </Magnet>
         </Link>
@@ -45,7 +59,8 @@ export default function Header() {
               key={item.label}
               href={item.link}
               aria-label={item.ariaLabel}
-              className={`text-white hover:text-black ${isScrolled ? "" :""} transition-colors duration-300 font-medium`}
+              onClick={() => setIsOpen(false)}
+              className={`text-white hover:text-[#FF9443] ${isScrolled ? "" :""} transition-colors duration-300 font-medium`}
             >  <Magnet padding={50} disabled={false} magnetStrength={6}> 
                     {item.label} 
                     </Magnet>
@@ -77,35 +92,51 @@ export default function Header() {
         </button>
       </div>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ x: "100%" }}
-            animate={{ x: 0 }}
-            exit={{ x: "100%" }}
-            transition={{ ease: "easeInOut", duration: 0.4 }}
-            className="fixed inset-0 bg-[#475569] flex flex-col items-center justify-center space-y-8 text-[32px] z-40 md:hidden"
-          >
-            {menuItems.map((item, index) => (
+      {typeof window !== 'undefined' && createPortal(
+        (
+          <AnimatePresence>
+            {isOpen && (
               <motion.div
-                key={item.label}
-                initial={{ opacity: 0, x: 30 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1, duration: 0.3 }}
+                initial={{ x: "100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "100%" }}
+                transition={{ ease: "easeInOut", duration: 0.4 }}
+                className="fixed inset-0 backdrop-blur-sm flex flex-col items-center justify-center space-y-8 text-[32px] z-[9999] md:hidden"
               >
-                <Link
-                  href={item.link}
-                  aria-label={item.ariaLabel}
+                <button
+                  aria-label="Close menu"
                   onClick={() => setIsOpen(false)}
-                  className="text-white hover:text-[#FF9443] font-medium transition-colors duration-300"
+                  className="absolute top-4 right-4 p-2 rounded-md focus:outline-none"
                 >
-                  {item.label}
-                </Link>
+                  <span className="sr-only">Close</span>
+                  <div className="w-8 h-8 relative">
+                    <span className="absolute left-0 top-1/2 h-1 w-8 -translate-y-1/2 rotate-45 bg-white rounded" />
+                    <span className="absolute left-0 top-1/2 h-1 w-8 -translate-y-1/2 -rotate-45 bg-white rounded" />
+                  </div>
+                </button>
+                {menuItems.map((item, index) => (
+                  <motion.div
+                    key={item.label}
+                    initial={{ opacity: 0, x: 30 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1, duration: 0.3 }}
+                  >
+                    <Link
+                      href={item.link}
+                      aria-label={item.ariaLabel}
+                      onClick={() => setIsOpen(false)}
+                      className="text-white hover:text-[#FF9443] font-medium transition-colors duration-300"
+                    >
+                      {item.label}
+                    </Link>
+                  </motion.div>
+                ))}
               </motion.div>
-            ))}
-          </motion.div>
-        )}
-      </AnimatePresence>
+            )}
+          </AnimatePresence>
+        ),
+        document.body
+      )}
     </header>
   )
 }
